@@ -6,7 +6,7 @@ echo "------------------------------------------------------------------"
 
 apt-get update 
 apt-get upgrade 
-apt-get -f -y install iputils-ping net-tools procps xz-utils 
+apt-get -f -y install git iputils-ping net-tools procps xz-utils 
 apt-get --purge autoremove 
 apt-get clean
 

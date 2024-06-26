@@ -1,2 +1,3 @@
 #!/command/execlineb -P
-bash
+if { echo Starting backend }
+sleep 1d

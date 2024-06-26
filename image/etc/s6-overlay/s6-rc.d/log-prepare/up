@@ -1,0 +1,3 @@
+if { mkdir -p /data/log/backend /data/log/frontend /data/log/kafka }
+if { chown nobody:nogroup /data/log/backend /data/log/frontend /data/log/kafka }
+chmod 02755 /data/log/backend /data/log/frontend /data/log/kafka

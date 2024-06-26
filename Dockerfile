@@ -16,4 +16,5 @@ COPY image /
 COPY versions /etc
 RUN /build.sh
 
+ENV PATH=/opt/logstash/jdk/bin
 ENTRYPOINT ["/init"]

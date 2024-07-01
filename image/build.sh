@@ -4,8 +4,8 @@ echo "------------------------------------------------------------------"
 echo "RUN image/build.sh"
 echo "------------------------------------------------------------------"
 
-apt-get update 
-apt-get upgrade 
+apt-get -y update 
+apt-get -y upgrade 
 apt-get -f -y install git iputils-ping net-tools procps xz-utils 
 apt-get --purge autoremove 
 apt-get clean

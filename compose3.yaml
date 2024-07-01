@@ -5,19 +5,19 @@ services:
     hostname: logstash-gateway-node-1
     image: docker.io/v42net/logstash-gateway
     volumes: 
-      - logstash-gateway-node-1:/data
+      - /shared/logstash-gateway-node-1:/data
   node-2:
     container_name: logstash-gateway-node-2
     hostname: logstash-gateway-node-2
     image: docker.io/v42net/logstash-gateway
     volumes: 
-      - logstash-gateway-node-2:/data
+      - /shared/logstash-gateway-node-2:/data
   node-3:
     container_name: logstash-gateway-node-3
     hostname: logstash-gateway-node-3
     image: docker.io/v42net/logstash-gateway
     volumes: 
-      - logstash-gateway-node-3:/data
+      - /shared/logstash-gateway-node-3:/data
 networks:
   default:
     name: logstash-gateway-network

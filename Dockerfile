@@ -16,5 +16,5 @@ COPY image /
 COPY versions /etc
 RUN /build.sh
 
-ENV PATH=/opt/logstash/jdk/bin
+ENV PATH=/opt/logstash/jdk/bin S6_BEHAVIOUR_IF_STAGE2_FAILS=2 S6_VERBOSITY=1
 ENTRYPOINT ["/init"]

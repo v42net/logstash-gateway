@@ -6,4 +6,9 @@ repo=$(git config --get remote.origin.url)
 branch=$(git rev-parse --abbrev-ref HEAD)
 name=$(basename ${repo%.*})
 repo=$(basename $(dirname ${repo}))/${name}
-docker run -it --rm -h ${name} --name ${name} ${repo}:${branch} /bin/bash
+
+names="-h ${name} --name ${name}"
+data="-v /shared/logstash-gateway-node:/data"
+image="${repo}:${branch}"
+
+docker run -it --rm ${names} ${data} ${image} /bin/bash

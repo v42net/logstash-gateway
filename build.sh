@@ -2,10 +2,10 @@
 set -e
 cd $(dirname $0)
 source ./versions
-repo=$(git config --get remote.origin.url)
+origin=$(git config --get remote.origin.url)
 branch=$(git rev-parse --abbrev-ref HEAD)
-name=$(basename ${repo%.*})
-repo=$(basename $(dirname ${repo}))/${name}
+name=$(basename ${origin%.*})
+repo=$(basename $(dirname ${origin}))/${name}
 tags="-t ${repo}:$(date +%F) -t ${repo}:${branch}"
 if [ $branch == "main" ]; then
     tags="${tags} -t ${repo}:latest"

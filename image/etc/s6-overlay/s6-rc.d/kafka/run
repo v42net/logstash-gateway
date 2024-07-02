@@ -1,3 +1,3 @@
-#!/command/execlineb -P
-if { echo Starting kafka }
-sleep 1d
+#!/bin/sh
+exec 2>&1
+exec /opt/kafka/bin/kafka-run-class.sh kafka.Kafka /data/kafka/server.properties

@@ -4,11 +4,21 @@ services:
     container_name: logstash-gateway-node
     hostname: logstash-gateway-node
     image: docker.io/v42net/logstash-gateway
+    configs:
+      - config
+    secrets:
+      - secrets
     volumes: 
       - /shared/logstash-gateway-node:/data
+configs:
+  config:
+    file: ./config.cfg
 networks:
   default:
     name: logstash-gateway-network
+secrets:
+  secrets:
+    file: ./secrets.cfg
 volumes:
   logstash-gateway-node:
     name: logstash-gateway-node

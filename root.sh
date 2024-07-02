@@ -8,7 +8,9 @@ name=$(basename ${repo%.*})
 repo=$(basename $(dirname ${repo}))/${name}
 
 names="-h ${name} --name ${name}"
+config="-v ./config.cfg:/config.cfg"
+secrets="-v ./secrets.cfg:/run/secrets/secrets.cfg"
 data="-v /shared/logstash-gateway-node:/data"
 image="${repo}:${branch}"
 
-docker run -it --rm ${names} ${data} ${image} /bin/bash
+docker run -it --rm ${names} ${config} ${secrets} ${data} ${image} /bin/bash

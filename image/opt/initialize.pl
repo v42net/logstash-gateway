@@ -18,7 +18,7 @@ print "\n\n\n";
 
 sub init {
     my ($this) = @_;
-    my (@dirs, @nobody);
+    my (@dirs, @user);
     $this->{hostname} = `hostname`;
     $this->{hostname} =~s/\s+//g;
     $this->{basename} = ($this->{hostname}=~/^(.*?)\-?\d?$/)[0];
@@ -28,8 +28,8 @@ sub init {
 
     @dirs = ("/data/log","/data/log/backend","/data/log/frontend","/data/log/kafka");
     mkpath(\@dirs);
-    @nobody = getpwnam("nobody");
-    chown($nobody[2],$nobody[3], @dirs);
+    @user = getpwnam("nobody");
+    chown($user[2],$user[3], @dirs);
     chmod(02755, @dirs);
 
     logstash::gateway::config::init($this);
@@ -53,7 +53,7 @@ sub load_cfg {
     return $cfg;
 }
 sub save_cfg {
-    my ($this, $config, $file) = @_;
+    my ($this, $config, $file, $mode) = @_;
     my ($fh, $key, $value);
     open($fh, ">", $file) or die("$!: $file\n");
     foreach $key (sort keys %$config) {
@@ -61,6 +61,9 @@ sub save_cfg {
         print $fh "$key=$value\n";
     }
     close($fh);
+    if (defined $mode) {
+        chmod ($mode, $file);
+    }
 }
 
 

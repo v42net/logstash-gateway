@@ -1,3 +1,3 @@
-#!/command/execlineb -P
-if { echo Starting frontend }
-sleep 1d
+#!/bin/sh
+exec 2>&1
+s6-setuidgid kafka sleep 1d

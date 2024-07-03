@@ -7,7 +7,7 @@ use Storable qw(dclone);
 
 sub init { # initialize kafka
     my ($this) = @_;
-    my ($kafka, $config);
+    my ($kafka, $config, @user);
     $kafka = bless(dclone($this), __PACKAGE__);
     $config = $this->load_cfg("/opt/kafka/config/kraft/server.properties");
     if ($kafka->{node} == 0) { 
@@ -21,7 +21,10 @@ sub init { # initialize kafka
     delete($config->{"advertised.listeners"});
     $config->{"log.dirs"} = "/data/kafka/logs";
     mkpath("/data/kafka/logs");
-    $this->save_cfg($config, "/data/kafka/server.properties");
+    chmod(0755, "/data/kafka", "/data/kafka/logs");
+    @user = getpwnam("kafka");
+    chown($user[2],$user[3], "/data/kafka/logs");
+    $this->save_cfg($config, "/data/kafka/server.properties", 0644);
     $kafka->format();
     $kafka->check($this);
 }
@@ -63,7 +66,7 @@ sub format { # format kafka storage
     }
     $id = $kafka->{secrets}{kafka_cluster_id};
     return if (-r "/data/kafka/logs/meta.properties");
-    @cmd = ("/opt/kafka/bin/kafka-storage.sh","format","-t",$id,"-c","/data/kafka/server.properties");
+    @cmd = ("s6-setuidgid","kafka","/opt/kafka/bin/kafka-storage.sh","format","-t",$id,"-c","/data/kafka/server.properties");
     system(@cmd) == 0 or die ("Kafka format failed: $?\n");
 }
 sub check { # check the kafka configuration

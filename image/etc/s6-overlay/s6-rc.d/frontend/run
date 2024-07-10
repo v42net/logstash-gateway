@@ -1,3 +1,7 @@
 #!/bin/sh
+set -a
+. /config.cfg
+. /data/kafka/env
+. /run/secrets/secrets.cfg
 exec 2>&1
-s6-setuidgid kafka sleep 1d
+s6-setuidgid frontend /opt/logstash/bin/logstash --path.settings /data/config/frontend

@@ -7,7 +7,7 @@ use Storable qw(dclone);
 
 sub init { # initialize kafka
     my ($this) = @_;
-    my ($kafka, $config, @user);
+    my ($kafka, $config, @user, $file, $fh);
     $kafka = bless(dclone($this), __PACKAGE__);
     $config = $this->load_cfg("/opt/kafka/config/kraft/server.properties");
     if ($kafka->{node} == 0) { 
@@ -27,15 +27,19 @@ sub init { # initialize kafka
     $this->save_cfg($config, "/data/kafka/server.properties", 0644);
     $kafka->format();
     $kafka->check($this);
+    $file = "/data/kafka/env";
+    open($fh, ">", $file) or die("$!: $file\n");
+    print $fh "export KAFKA=".$kafka->{env}."\n";
+    close($fh);
 }
 sub configure_1 { # generate a single-node kafka configuration
     my ($kafka, $config) = @_;
     my ($name);
     $name = $kafka->{hostname};
-    $kafka->{"node.id"} = 1;
-    $config->{"node.id"} = 1;
-    $config->{"controller.quorum.voters"} = "1\@$name:9093";
+    $config->{"node.id"} = 0;
+    $config->{"controller.quorum.voters"} = "0\@$name:9093";
     $config->{"listeners"} = "PLAINTEXT://$name:9092,CONTROLLER://$name:9093";
+    $kafka->{env} = "$name:9092";
     $config->{"num.partitions"} = 1;
     $config->{"offsets.topic.replication.factor"} = 1;
     $config->{"transaction.state.log.replication.factor"} = 1;
@@ -45,14 +49,15 @@ sub configure_3 { # generate a three-node kafka configuration
     my ($name, $node, $n);
     $name = $kafka->{basename};
     $node = $kafka->{node};
-    $kafka->{"node.id"} = $node;
     $config->{"node.id"} = $node;
     $config->{"controller.quorum.voters"} = "$node\@$name-$node:9093";
     $config->{"listeners"} = "PLAINTEXT://$name-$node:9092,CONTROLLER://$name-$node:9093";
+    $kafka->{env} = "$name-$node:9202";
     foreach $n (1, 2, 3) {
         next if ($n == $node);
         $config->{"controller.quorum.voters"} .= ",$n\@$name-$n:9093";
         $config->{"listeners"} .= ",PLAINTEXT://$name-$n:9092,CONTROLLER://$name-$n:9093";
+        $kafka->{env} .= ",$name-$node:9092";
     }
     $config->{"num.partitions"} = 3;
     $config->{"offsets.topic.replication.factor"} = 2;
@@ -73,7 +78,7 @@ sub check { # check the kafka configuration
     my ($kafka, $this) = @_;
     my ($metadata);
     $metadata = $this->load_cfg("/data/kafka/logs/meta.properties");
-    if ($metadata->{"node.id"} != $kafka->{"node.id"}) {
+    if ($metadata->{"node.id"} != $kafka->{node}) {
         die("Kafka node.id mismatch\n");
     }
     if ($metadata->{"cluster.id"} ne $kafka->{secrets}{kafka_cluster_id}) {
